@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Web Foundations</title>
+  <link rel="stylesheet" href="style.css" />
+  <script>
+    // Redirect to login if not logged in, otherwise go to home
+    if (!localStorage.getItem('authToken')) {
+      window.location.href = 'login.html';
+    } else {
+      window.location.href = 'home.html';
+    }
+  </script>
+</head>
+<body>
+    <!--Top navigation bar-->
+    <header class="top-bar">
+        <div class="logo" style="font-weight: bold; font-size: 1.2rem;">Berlin-Benz</div>
+        <nav class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+            <a href="pricing.html">Pricing</a>
+            <a href="login.html">Login</a>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <h1>Welcome to Berlin-Benz</h1>
+        <p>This is the place holder content area.</p>
+    </main>
+    <section class="main-content hero">
+  <h1>Berlin Benz Articles</h1>
+  <p>Premium content for our subscribers</p>
+  <button id="explore-btn" class="cta-btn">Explore Articles</button>
+    </section>
+
+    <div id="filter-buttons" class="filter-buttons hidden">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="image">Images</button>
+      <button class="filter-btn" data-filter="pdf">PDFs</button>
+      <button class="filter-btn" data-filter="text">Text</button>
+    </div>
+
+    <section id="articles" class="articles-container hidden"></section>
+
+    <!-- PDF Modal -->
+    <div id="pdf-modal" class="modal hidden">
+      <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <embed id="pdf-modal-embed" type="application/pdf" style="width:100%; height:90vh;" />
+      </div>
+    </div>
+
+<script src="script.js"></script>
+
+    <!--Footer-->
+    <footer class="footer">
+        <p>&copy; 2024 Berlin-Benz. All rights reserved.</p>
+  
+
+</body>
+</html>

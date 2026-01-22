@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pricing & Checkout - Berlin-Benz</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .pricing-section {
+      max-width: 1200px;
+      margin: 3rem auto;
+      padding: 2rem;
+    }
+
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .plan-card {
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .plan-card:hover {
+      border-color: #ffd700;
+      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2);
+    }
+
+    .plan-card h3 {
+      font-size: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .plan-price {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #ffd700;
+      margin: 1rem 0;
+    }
+
+    .plan-price small {
+      font-size: 1rem;
+      color: #666;
+    }
+
+    .plan-features {
+      list-style: none;
+      margin: 2rem 0;
+      padding: 0;
+      text-align: left;
+    }
+
+    .plan-features li {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .plan-features li:before {
+      content: "✓ ";
+      color: #ffd700;
+      font-weight: bold;
+      margin-right: 0.5rem;
+    }
+
+    .cta-btn {
+      background-color: #ffd700;
+      color: #111;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 1rem;
+      width: 100%;
+      transition: background-color 0.3s;
+    }
+
+    .cta-btn:hover:not(:disabled) {
+      background-color: #ffed4e;
+    }
+
+    .cta-btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    /* Checkout Modal */
+    .checkout-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .checkout-modal.active {
+      display: flex;
+    }
+
+    .checkout-form {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      max-width: 500px;
+      width: 90%;
+    }
+
+    .checkout-form h2 {
+      margin-top: 0;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    .checkout-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .btn-secondary {
+      flex: 1;
+      padding: 0.75rem 1.5rem;
+      background: #e0e0e0;
+      color: #111;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .btn-secondary:hover {
+      background: #d0d0d0;
+    }
+
+    .payment-status {
+      padding: 1rem;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .status-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .status-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+  </style>
+</head>
+<body>
+  <!--Top navigation bar-->
+  <header class="top-bar">
+    <div class="logo" style="font-weight: bold; font-size: 1.2rem;">Berlin-Benz</div>
+    <nav class="nav-links">
+      <a href="home.html">Home</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="#" id="logout-btn">Logout</a>
+    </nav>
+  </header>
+
+  <main class="pricing-section">
+    <h1>Simple, Transparent Pricing</h1>
+    <p style="text-align: center; color: #666; margin-bottom: 3rem;">
+      Choose the plan that works best for you. All plans include full article access.
+    </p>
+
+    <div class="plans-grid" id="plans-container">
+      <!-- Plans will be loaded here by JavaScript -->
+    </div>
+  </main>
+
+  <!-- Checkout Modal -->
+  <div id="checkout-modal" class="checkout-modal">
+    <div class="checkout-form">
+      <h2 id="checkout-title">Complete Payment</h2>
+      
+      <div id="payment-status" class="payment-status" style="display: none;"></div>
+
+      <form id="payment-form" style="display: block;">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" value="" disabled style="background: #f5f5f5;">
+        </div>
+
+        <div id="plan-summary" style="background: #f9f9f9; padding: 1rem; border-radius: 4px; margin-bottom: 1rem;">
+          <!-- Plan details will be inserted here -->
+        </div>
+
+        <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">
+          You will be redirected to Payoneer to complete payment securely.
+        </p>
+
+        <div class="checkout-buttons">
+          <button type="button" class="btn-secondary" onclick="closeCheckout()">Cancel</button>
+          <button type="submit" class="cta-btn" id="submit-btn" style="flex: 1;">
+            Continue to Payoneer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2024 Berlin-Benz. All rights reserved.</p>
+  </footer>
+
+  <script>
+    /**
+     * SECURE STRIPE PAYMENT INTEGRATION
+     * Plans and pricing come from backend (never trust frontend)
+     * Payment Intent created server-side with backend-calculated price
+     */
+
+    let stripe = null;
+    let elements = null;
+    let cardElement = null;
+    let currentPlan = null;
+    let currentPaymentIntentId = null;
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check authentication
+      const authResponse = await fetch('/api/auth/me');
+      if (!authResponse.ok) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const authData = await authResponse.json();
+      if (!authData.authenticated) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Set email in form
+      document.getElementById('email').value = authData.user.email;
+
+      // Load plans from backend
+      await loadPlans();
+
+      // Initialize Stripe
+      initializeStripe();
+
+      // Setup logout
+      document.getElementById('logout-btn').addEventListener('click', async (e) => {
+        e.preventDefault();
+        await fetch('/api/auth/logout', { method: 'POST' });
+        window.location.href = 'login.html';
+      });
+    });
+
+    /**
+     * Load plans from backend
+     */
+    async function loadPlans() {
+      try {
+        const response = await fetch('/api/payment/plans');
+        const data = await response.json();
+
+        const container = document.getElementById('plans-container');
+        container.innerHTML = '';
+
+        data.plans.forEach(plan => {
+          const planCard = document.createElement('div');
+          planCard.className = 'plan-card';
+          planCard.innerHTML = `
+            <h3>${plan.name}</h3>
+            <div class="plan-price">$${(plan.price / 100).toFixed(2)}<br><small>/${plan.duration_days} days</small></div>
+            <p>${plan.description}</p>
+            <ul class="plan-features">
+              ${plan.features.map(f => `<li>${f}</li>`).join('')}
+            </ul>
+            <button type="button" class="cta-btn" onclick="selectPlan('${plan.id}', '${plan.name}', ${plan.price})">
+              Choose Plan
+            </button>
+          `;
+          container.appendChild(planCard);
+        });
+      } catch (error) {
+        console.error('Error loading plans:', error);
+        alert('Unable to load pricing. Please refresh the page.');
+      }
+    }
+
+    /**
+     * User clicks "Choose Plan"
+     */
+    async function selectPlan(planId, planName, priceInCents) {
+      currentPlan = { id: planId, name: planName, price: priceInCents };
+
+      // Show checkout modal
+      document.getElementById('checkout-modal').classList.add('active');
+      document.getElementById('checkout-title').textContent = `Buy ${planName}`;
+
+      // Show plan summary
+      const summary = document.getElementById('plan-summary');
+      summary.innerHTML = `
+        <strong>${planName}</strong><br>
+        $${(priceInCents / 100).toFixed(2)}
+      `;
+
+      // Update pay button
+      document.getElementById('pay-amount').textContent = `$${(priceInCents / 100).toFixed(2)}`;
+
+      // Create payment intent on backend
+      await createPaymentIntent(planId);
+    }
+
+    /**
+     * Create Payment Checkout on backend
+     * Only planId is sent - price is calculated server-side
+     * Backend returns checkout URL for Payoneer redirect
+     */
+    async function createPaymentIntent(planId) {
+      try {
+        const response = await fetch('/api/payment/create-checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ planId })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to create payment');
+        }
+
+        // Store payment token
+        currentPaymentIntentId = data.paymentToken;
+
+        // Show instructions before redirecting
+        showPaymentStatus('pending', 'Redirecting to Payoneer payment gateway...');
+
+        // Redirect to Payoneer checkout after short delay
+        setTimeout(() => {
+          window.location.href = data.redirectUrl;
+        }, 1500);
+
+        console.log('✅ Payment checkout created:', data.paymentToken);
+      } catch (error) {
+        console.error('Payment checkout error:', error);
+        showPaymentStatus('error', error.message || 'Failed to initialize payment. Please try again.');
+      }
+    }
+
+    /**
+     * Initialize Stripe
+     * SECURITY: Publishable key is safe to expose to frontend
+     * Secret key remains on backend only
+     */
+    function initializeStripe() {
+      // Stripe initialization no longer needed for Payoneer integration
+      // Payment redirection is handled by createPaymentIntent()
+      console.log('✅ Payment system ready (Payoneer)');
+    }
+
+    /**
+     * Display payment status message
+     */
+    function showPaymentStatus(type, message) {
+      const statusEl = document.getElementById('payment-status');
+      statusEl.textContent = message;
+      statusEl.className = `payment-status status-${type}`;
+      statusEl.style.display = 'block';
+    }
+
+    /**
+     * Close checkout modal
+     */
+    function closeCheckout() {
+      document.getElementById('checkout-modal').classList.remove('active');
+      document.getElementById('payment-form').reset();
+      document.getElementById('payment-status').style.display = 'none';
+      currentPlan = null;
+      currentPaymentIntentId = null;
+    }
+
+    /**
+     * Handle payment form submission
+     * SECURITY: Real Payoneer integration
+     * - Backend creates checkout (price enforced server-side)
+     * - User is redirected to Payoneer payment gateway
+     * - Payoneer IPN notifies backend on success
+     * - Access ONLY granted after IPN verification
+     */
+    document.getElementById('payment-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Verify payment token exists
+      if (!currentPaymentIntentId) {
+        showPaymentStatus('error', 'Payment initialization failed. Please try again.');
+        return;
+      }
+
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Redirecting to payment...';
+
+      // Payment creation already handles the redirect
+      // The checkout modal stays visible while redirecting
+      showPaymentStatus('pending', 'Completing payment...');
+    });
+
+    // Close modal when clicking outside
+    document.getElementById('checkout-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'checkout-modal') {
+        closeCheckout();
+      }
+    });
+  </script>
+</body>
+</html>

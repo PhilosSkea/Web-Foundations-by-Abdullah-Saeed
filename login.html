@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Berlin-Benz</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="api-client.js"></script>
+  <style>
+      .auth-container {
+          max-width: 400px;
+          margin: 0 auto;
+      }
+      .auth-toggle {
+          display: flex;
+          margin-bottom: 2rem;
+          border-bottom: 2px solid #eee;
+      }
+      .auth-toggle button {
+          flex: 1;
+          padding: 1rem;
+          background: none;
+          border: none;
+          cursor: pointer;
+          font-size: 1rem;
+          font-weight: bold;
+          color: #666;
+      }
+      .auth-toggle button.active {
+          color: #111;
+          border-bottom: 2px solid #ffd700;
+          margin-bottom: -2px;
+      }
+      .form-group {
+          margin-bottom: 1.5rem;
+      }
+      .form-group label {
+          display: block;
+          margin-bottom: 0.5rem;
+          font-weight: 500;
+      }
+      .form-group input {
+          width: 100%;
+          padding: 0.75rem;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          font-size: 1rem;
+      }
+      .social-login {
+          margin-top: 2rem;
+          text-align: center;
+          border-top: 1px solid #eee;
+          padding-top: 2rem;
+      }
+      .social-btn {
+          display: block;
+          width: 100%;
+          padding: 0.75rem;
+          margin-bottom: 1rem;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          background: white;
+          cursor: pointer;
+          font-weight: 500;
+      }
+      .social-btn:hover {
+          background: #f9f9f9;
+      }
+  </style>
+</head>
+<body>
+    <!--Top navigation bar-->
+    <header class="top-bar">
+        <div class="logo" style="font-weight: bold; font-size: 1.2rem;">Berlin-Benz</div>
+        <nav class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+            <a href="pricing.html">Pricing</a>
+            <a href="login.html">Login</a>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <div class="auth-container">
+            <div class="auth-toggle">
+                <button id="login-tab" class="active" onclick="toggleAuth('login')">Login</button>
+                <button id="signup-tab" onclick="toggleAuth('signup')">Sign Up</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal;">
+                        <input type="checkbox"> Remember me
+                    </label>
+                    <a href="#" style="color: #0066cc; text-decoration: none; font-size: 0.9rem;">Forgot Password?</a>
+                </div>
+                <button type="submit" class="cta-btn" style="width: 100%; margin-top: 0;">Log In</button>
+            </form>
+
+            <!-- Signup Form (Hidden by default) -->
+            <form id="signup-form" class="hidden">
+                <div class="form-group">
+                    <label for="signup-name">Full Name</label>
+                    <input type="text" id="signup-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-confirm">Confirm Password</label>
+                    <input type="password" id="signup-confirm" required>
+                </div>
+                <button type="submit" class="cta-btn" style="width: 100%; margin-top: 0;">Create Account</button>
+            </form>
+
+            <div class="social-login">
+                <p style="margin-bottom: 1rem; color: #666;">Or continue with</p>
+                <button class="social-btn">Google</button>
+                <button class="social-btn">Apple</button>
+            </div>
+        </div>
+    </main>
+
+    <!--Footer-->
+    <footer class="footer">
+        <p>&copy; 2024 Berlin-Benz. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function toggleAuth(mode) {
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            const loginTab = document.getElementById('login-tab');
+            const signupTab = document.getElementById('signup-tab');
+
+            if (mode === 'login') {
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                loginTab.classList.add('active');
+                signupTab.classList.remove('active');
+            } else {
+                loginForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+                loginTab.classList.remove('active');
+                signupTab.classList.add('active');
+            }
+        }
+
+        // Handle login form submission
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            try {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Logging in...';
+                
+                await APIClient.login(email, password);
+                window.location.href = 'home.html';
+            } catch (error) {
+                alert(error.message || 'Login failed. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+
+        // Handle signup form submission
+        document.getElementById('signup-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('signup-confirm').value;
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            try {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Creating Account...';
+                
+                await APIClient.signup(email, password, name, confirmPassword);
+                window.location.href = 'home.html';
+            } catch (error) {
+                alert(error.message || 'Signup failed. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+
+        // Check if user is already logged in, redirect to home if they are
+        if (APIClient.isAuthenticated()) {
+            window.location.href = 'home.html';
+        }
+    </script>
+</body>
+</html>
